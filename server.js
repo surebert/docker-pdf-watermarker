@@ -1,5 +1,4 @@
 const express = require('express');    //Express Web Server
-const busboy = require('connect-busboy'); //middleware for form/file upload
 const path = require('path');     //used for file path
 const fs = require('fs-extra');       //File System - for file manipulation
 var uuid = require('node-uuid');
@@ -22,12 +21,11 @@ var deleteFolderRecursive = function(path) {
 };
 
 var app = express();
-app.use(busboy());
 
 app.get('/', function (req, res) {
   res.send('<h1>Instructions</h1><p>In order to watermark a pdf send two PDF files to /upload, one with fieldname watermark and one with fieldname pdf-to-watermark.  The watermark pdf will get stamped on each page of the pdf-to-watermark pdf and the resulting PDF streamed back.</p><pre>curl -i -F "watermark=@watermark.pdf" -F "pdf-to-watermark=@my.pdf" http://localhost:'+PORT+'/watermark > watermarked.pdf</pre>\n');
 });
-
+var Busboy = require('busboy');
 /* ==========================================================
 Create a Route (/watermark) to handle the upload
 (handle POST requests to /upload)
@@ -35,22 +33,21 @@ Express v4  Route definition
 ============================================================ */
 app.route('/watermark')
     .post(function (req, res, next) {
-
+        var busboy = new Busboy({ headers: req.headers });
         var fstream;
-        var watermark,pdftowatermark;
-        req.pipe(req.busboy);
+        var watermark,pdftowatermark='';
+
         let tempdir = '/tmp/' + uuid.v4()
         fs.mkdir(tempdir);
-    
-        req.busboy.on('file', function (fieldname, file, filename, encoding, mimetype) {
-            file.on('data', function(){
-            // got a chunk of file
-            });
+        let filesUploaded = 0;
+        busboy.on('file', function (fieldname, file, filename, encoding, mimetype) {
+
             let localpath = tempdir+"/"+fieldname+'.pdf';
             fstream = fs.createWriteStream(localpath);
             file.pipe(fstream);
 
             fstream.on('close', function () {
+                filesUploaded++;
                 console.log('Uploaded File: ' + filename);
 
                 if(fieldname == "pdf-to-watermark"){
@@ -59,6 +56,12 @@ app.route('/watermark')
 
                 if(fieldname == "watermark"){
                   watermark = localpath;
+                }
+
+                if(filesUploaded == 2 && (watermark === undefined || pdftowatermark === undefined)){
+                  res.status(500);
+                  res.send("Two files uploaded but the file upload fields did not have the right names, did you name the fields watermark and pdf-to-watermark?\n");
+                  return;
                 }
 
                 if(watermark && pdftowatermark){
@@ -97,6 +100,7 @@ app.route('/watermark')
                 }
             });
         });
+        req.pipe(busboy);
     });
 
 app.listen(PORT);
