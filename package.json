@@ -1,0 +1,16 @@
+{
+  "name": "docker_node_pdftk_waterstamper",
+  "version": "1.0.0",
+  "description": "pdftk based PDF waterstamper served over nodejs",
+  "author": "Paul Visco <paul.visco@gmail.com>",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.13.3",
+    "node-uuid": "^1.4.7",
+    "fs-extra" : "^1.0",
+    "connect-busboy" : "^0.0.2"
+  }
+}
