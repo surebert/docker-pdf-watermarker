@@ -13,7 +13,7 @@ docker pull repos.roswellpark.org:4567/web-team/docker-node-pdf-watermarker
 docker run -d \
     --name pdf-watermarker \
     --restart=always \
-    -p 9021:9021 \
+    -p 127.0.0.1:9021:9021 \
     -e "port=9021" \
     repos.roswellpark.org:4567/web-team/docker-node-pdf-watermarker
 ```
