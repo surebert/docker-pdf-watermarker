@@ -11,6 +11,6 @@
     "express": "^4.13.3",
     "node-uuid": "^1.4.7",
     "fs-extra" : "^1.0",
-    "connect-busboy" : "^0.0.2"
+    "busboy" : "^0.2.13"
   }
 }

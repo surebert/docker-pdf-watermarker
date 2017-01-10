@@ -3,29 +3,26 @@ const path = require('path');     //used for file path
 const fs = require('fs-extra');       //File System - for file manipulation
 var uuid = require('node-uuid');
 var exec = require('child_process').exec;
-
-const PORT = 8080;
-
-var deleteFolderRecursive = function(path) {
-  if( fs.existsSync(path) ) {
-    fs.readdirSync(path).forEach(function(file,index){
-      var curPath = path + "/" + file;
-      if(fs.lstatSync(curPath).isDirectory()) { // recurse
-        deleteFolderRecursive(curPath);
-      } else { // delete file
-        fs.unlinkSync(curPath);
-      }
-    });
-    fs.rmdirSync(path);
-  }
-};
+var Busboy = require('busboy');
+const PORT = process.env.port || 9021;
 
 var app = express();
 
 app.get('/', function (req, res) {
-  res.send('<h1>Instructions</h1><p>In order to watermark a pdf send two PDF files to /upload, one with fieldname watermark and one with fieldname pdf-to-watermark.  The watermark pdf will get stamped on each page of the pdf-to-watermark pdf and the resulting PDF streamed back.</p><pre>curl -i -F "watermark=@watermark.pdf" -F "pdf-to-watermark=@my.pdf" http://localhost:'+PORT+'/watermark > watermarked.pdf</pre>\n');
+  let home = __dirname+"/home.html";
+  let stat = fs.statSync(home);
+  var readStream = fs.createReadStream(home);
+  var html = "";
+  readStream.on('data', function (chunk) {
+        html += chunk.toString().replace("@PORT", PORT);
+  });
+  readStream.on('end', function(){
+    res.status(200).send(html);
+  });
+
 });
-var Busboy = require('busboy');
+
+
 /* ==========================================================
 Create a Route (/watermark) to handle the upload
 (handle POST requests to /upload)
