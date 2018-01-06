@@ -41,7 +41,8 @@ E.g. Any src or href that does not start with @FILE: will cause the service to e
 This assumes that the docker image was deployed to localhost on port 9021 and that you are in the test directory of this project where there are two files: one named watermark.pdf and another named my.pdf.
 
 ```bash
-curl -F "watermark=@watermark.pdf" -F "pdf-to-watermark=@my.pdf" http://localhost:9021/watermark > watermarked.pdf
+cd test
+curl -F "watermark=@watermark.pdf" -F "pdf-to-watermark=@pdf-to-watermark.pdf" http://localhost:9021/watermark > watermarked.pdf
 ```
 
 ## Example call from CURL in PHP
@@ -65,11 +66,11 @@ This assumes that the docker image was deployed to localhost on port 9020 and th
 If you wanted to build and test this yourself
 
 ```bash
-docker build --rm -t yournamespace/docker-node-pdf-watermarker .
+docker build --rm -t paulvisco/docker-node-pdf-watermarker .
 
 docker run -d \
     --name pdf-watermarker \
     --restart=always \
     -p 9021:9021 \
-    yournamespace/docker-node-pdf-watermarker
+    paulvisco/docker-node-pdf-watermarker
 ```
