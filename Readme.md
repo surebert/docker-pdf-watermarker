@@ -1,4 +1,4 @@
-webteam/docker-node-pdf-watermarker
+Docker HTTP Node PDF Watermarker
 ========================
 
 This image is service used to stamp one PDF as a watermark on each page of another and to
@@ -7,15 +7,14 @@ return the resulting PDF using pdftk.
 # Deployment using copy of project on repos registry where the image is pre-built
 
 ```bash
-docker login repos.roswellpark.org:4567
-docker pull repos.roswellpark.org:4567/web-team/docker-node-pdf-watermarker
+docker pull paulvisco/docker-node-pdf-watermarker
 
 docker run -d \
     --name pdf-watermarker \
     --restart=always \
     -p 127.0.0.1:9021:9021 \
     -e "port=9021" \
-    repos.roswellpark.org:4567/web-team/docker-node-pdf-watermarker
+    paulvisco/docker-node-pdf-watermarker
 ```
 
 # Connecting to the container from the host
